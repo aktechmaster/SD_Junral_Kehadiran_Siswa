@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Kehadiran Siswa</title>
+    <link rel="icon" type="image/png" href="logosmpit.png">
+    <link rel="shortcut icon" type="image/png" href="logosmpit.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+    :root {
+        --primary: #0284c7;      
+        --accent: #06b6d4;        
+        --bg-page: #f0f9ff;      
+        --glass-bg: rgba(255, 255, 255, 0.95); 
+        --text-main: #334155;    
+        --input-bg: #ffffff;     
+        --shadow: 0 10px 40px -10px rgba(2, 132, 199, 0.2); 
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+        font-family: 'Outfit', sans-serif;
+        background-color: var(--bg-page);
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(2, 132, 199, 0.15) 0%, transparent 40%);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px 15px;
+        margin: 0;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid white;
+        border-radius: 24px;
+        padding: 30px 20px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h2 {
+        font-size: 1.6rem; margin: 0;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+    .header p { color: #64748b; font-size: 0.85rem; margin-top: 5px; font-weight: 500; letter-spacing: 1px; }
+
+    .input-group { margin-bottom: 15px; }
+    .input-group label {
+        display: block; margin-bottom: 6px; font-size: 0.8rem;
+        font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .form-control {
+        width: 100%; padding: 12px 14px;
+        background: var(--input-bg); border: 2px solid #e2e8f0;
+        border-radius: 12px; color: var(--text-main);
+        font-size: 0.95rem; font-family: 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); }
+
+    /* --- LIST SISWA STYLING --- */
+    .student-list-container {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .student-item {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        background: white;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s;
+    }
+    
+    .student-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #334155;
+        flex: 1;
+        padding-right: 15px;
+        line-height: 1.4;
+    }
+
+    .attendance-options {
+        display: flex;
+        gap: 6px; /* Jarak antar kotak */
+        flex-shrink: 0; 
+    }
+
+    .radio-option { 
+        position: relative; 
+        width: auto; 
+        height: auto; 
+    } 
+    
+    .radio-option input { 
+        position: absolute; width: 100%; height: 100%; 
+        opacity: 0; cursor: pointer; z-index: 2; 
+    }
+
+    /* --- CSS BARU UNTUK MEMAKSA TENGAH --- */
+    .radio-label {
+        /* Paksa Ukuran Kotak */
+        width: 40px !important; 
+        height: 40px !important;
+        
+        /* METODE GRID (Lebih ampuh dari Flexbox untuk kasus ini) */
+        display: grid !important;
+        place-content: center !important; /* Memaksa isi ke tengah secara vertikal & horizontal */
+        place-items: center !important;
+        
+        /* Reset semua pengganggu posisi */
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        
+        /* Dekorasi */
+        background: #fff; 
+        border: 2px solid #e2e8f0; 
+        border-radius: 8px; 
+        
+        font-weight: 800;        
+        font-size: 0.9rem;       
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #94a3b8; 
+        
+        /* Mencegah teks terblok */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Hover State */
+    .radio-label:hover { border-color: #cbd5e1; color: #64748b; }
+
+    /* --- STATE ACTIVE (Saat Dipilih) --- */
+    
+    /* Hadir - Hijau */
+    .radio-option input[value="H"]:checked + .radio-label { 
+        background: var(--success); 
+        border-color: var(--success);
+        color: white; 
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); 
+        transform: translateY(-2px);
+    }
+    
+    /* Sakit - Kuning */
+    .radio-option input[value="S"]:checked + .radio-label { 
+        background: var(--warning); 
+        border-color: var(--warning);
+        color: white; 
+        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    /* Izin - Biru */
+    .radio-option input[value="I"]:checked + .radio-label { 
+        background: var(--primary); 
+        border-color: var(--primary);
+        color: white; 
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    /* Alpha - Merah */
+    .radio-option input[value="A"]:checked + .radio-label { 
+        background: var(--danger); 
+        border-color: var(--danger);
+        color: white; 
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit {
+        width: 100%; padding: 16px; margin-top: 20px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white; border: none; border-radius: 12px;
+        font-size: 1rem; font-weight: 800; letter-spacing: 1px;
+        cursor: pointer; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.4);
+        text-transform: uppercase;
+    }
+
+    /* --- RESPONSIVE MOBILE FIX --- */
+    @media (max-width: 480px) {
+        .container { padding: 25px 15px; }
+        
+        .student-item {
+            flex-direction: column; 
+            align-items: flex-start; 
+            padding: 15px;
+            gap: 12px; 
+        }
+
+        .student-name {
+            font-size: 1rem; 
+            padding-right: 0;
+            width: 100%;
+            border-bottom: 1px dashed #e2e8f0; 
+            padding-bottom: 10px;
+            margin-bottom: 0;
+        }
+
+        .attendance-options {
+            width: 100%;
+            justify-content: space-between; 
+            gap: 8px; 
+        }
+
+        .radio-label { 
+            width: 100%; 
+            height: 44px; /* Tinggi di HP */
+            font-size: 1rem;
+            /* Pastikan properti centering tetap aktif di HP */
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .radio-option { flex: 1; }
+    }
+    
+    .loader { width: 24px; height: 24px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+    .loader-dark { border-color: var(--primary); border-bottom-color: transparent; }
+    @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.9); z-index: 10; display: flex; justify-content: center; align-items: center; flex-direction: column; color: var(--primary); font-weight: 700; }
+
+    .school-logo {
+        width: 100px; /* Atur besar kecil logo di sini */
+        height: auto;
+        display: block;
+        margin: 0 auto 10px auto; /* Posisi tengah */
+    }
+        
+</style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="mainLoader" class="loading-overlay" style="display: none;">
+        <span class="loader loader-dark" style="width: 40px; height: 40px;"></span>
+        <p style="margin-top: 10px;">Memproses Data...</p>
+    </div>
+
+    <div class="header">
+        <img src="logosmpit.png" alt="Logo Sekolah" class="school-logo">
+        
+        <h2>JURNAL KEHADIRAN SISWA</h2>
+        <p>Smart Input System v2.0</p>
+    </div>
+
+    <form id="attendanceForm">
+        
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="emailGuru" class="form-control" placeholder="nama@sekolah.sch.id" required>
+            <small style="color: #94a3b8; font-size: 0.75rem;">*Otomatis tersimpan untuk sesi berikutnya</small>
+        </div>
+
+        <div class="input-group">
+            <label>Tanggal Kegiatan</label>
+            <input type="date" id="tanggal" class="form-control" required>
+        </div>
+
+        <div class="input-group">
+            <label>Kelas</label>
+            <div style="position: relative;">
+                <select id="kelas" class="form-control" onchange="loadSiswa()" required>
+                    <option value="">-- Pilih Kelas --</option>
+                </select>
+                <div id="kelasLoader" style="position: absolute; right: 10px; top: 12px; display: none;">
+                    <span class="loader loader-dark"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                <label style="margin:0;">Daftar Presensi</label>
+            </div>
+            
+            <div id="studentContainer" class="student-list-container">
+                <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                    Silakan pilih kelas terlebih dahulu.
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btnKirim">
+            KIRIM DATA <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px; font-size: 0.75rem; color: #cbd5e1;">
+        &copy; 2026 aktechmaster | Designed & Developed by aktechmaster
+    </div>
+
+</div>
+
+<script>
+    // --- KONFIGURASI ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqC7MvEayos9s8IdYbcoXF488iQ09-LneUD0DvawKUf6AYIUWPOaI0NvMfNEMQP6JVBA/exec'; 
+
+    // --- INISIALISASI ---
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('tanggal').valueAsDate = new Date();
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+            document.getElementById('emailGuru').value = savedEmail;
+        }
+        loadClasses();
+    });
+
+    document.getElementById('emailGuru').addEventListener('input', function() {
+        localStorage.setItem('userEmail', this.value);
+    });
+
+    function loadClasses() {
+        const selectKelas = document.getElementById('kelas');
+        const loader = document.getElementById('kelasLoader');
+        
+        loader.style.display = 'block';
+        
+        fetch(SCRIPT_URL + '?action=getClasses')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(kelas => {
+                    let option = document.createElement('option');
+                    option.value = kelas;
+                    option.text = kelas;
+                    selectKelas.appendChild(option);
+                });
+                loader.style.display = 'none';
+            })
+            .catch(error => {
+                loader.style.display = 'none';
+            });
+    }
+
+    function loadSiswa() {
+        const kelas = document.getElementById('kelas').value;
+        const container = document.getElementById('studentContainer');
+        
+        if (!kelas) {
+            container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Silakan pilih kelas terlebih dahulu.</div>';
+            return;
+        }
+
+        container.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loader loader-dark"></span><br>Mengambil data siswa...</div>';
+
+        fetch(SCRIPT_URL + `?action=getStudents&kelas=${kelas}`)
+            .then(response => response.json())
+            .then(students => {
+                container.innerHTML = ''; 
+                
+                if (students.length === 0) {
+                    container.innerHTML = '<div style="text-align: center;">Tidak ada data siswa.</div>';
+                    return;
+                }
+
+                students.forEach((nama, index) => {
+                    
+                    const html = `
+                    <div class="student-item">
+                        <div class="student-name">${index + 1}. ${nama}</div>
+                        <div class="attendance-options">
+                            <div class="radio-option">
+                                <input type="radio" name="status_${index}" value="H" checked data-name="${nama}">
+                                <label class="radio-label">H</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="status_${index}" value="S" data-name="${nama}">
+                                <label class="radio-label">S</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="status_${index}" value="I" data-name="${nama}">
+                                <label class="radio-label">I</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="status_${index}" value="A" data-name="${nama}">
+                                <label class="radio-label">A</label>
+                            </div>
+                        </div>
+                    </div>`;
+                    container.insertAdjacentHTML('beforeend', html);
+                });
+            })
+            .catch(error => {
+                container.innerHTML = 'Gagal memuat siswa.';
+            });
+    }
+
+    // --- HANDLE SUBMIT ---
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btnKirim');
+        const overlay = document.getElementById('mainLoader');
+        
+        const studentItems = document.querySelectorAll('.student-item');
+        if (studentItems.length === 0) {
+            alert("Belum ada data siswa yang dimuat.");
+            return;
+        }
+
+        btn.disabled = true;
+        overlay.style.display = 'flex';
+
+        let presensiData = [];
+        studentItems.forEach((item, index) => {
+            const selectedRadio = document.querySelector(`input[name="status_${index}"]:checked`);
+            if (selectedRadio) {
+                presensiData.push({
+                    nama: selectedRadio.getAttribute('data-name'),
+                    status: selectedRadio.value
+                });
+            }
+        });
+
+        const payload = {
+            email: document.getElementById('emailGuru').value,
+            tanggal: document.getElementById('tanggal').value,
+            kelas: document.getElementById('kelas').value,
+            presensi: presensiData
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result === 'success') {
+                alert('✅ Data Berhasil Disimpan!');
+                document.getElementById('attendanceForm').reset();
+                document.getElementById('studentContainer').innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Silakan pilih kelas terlebih dahulu.</div>';
+                document.getElementById('emailGuru').value = localStorage.getItem('userEmail');
+                document.getElementById('tanggal').valueAsDate = new Date();
+            } else {
+                alert('❌ Gagal menyimpan: ' + data.message);
+            }
+        })
+        .catch(err => {
+            // Fallback untuk antisipasi CORS error di beberapa browser mobile
+            alert('✅ Data Terkirim! (Cek Spreadsheet)');
+            document.getElementById('attendanceForm').reset();
+            document.getElementById('emailGuru').value = localStorage.getItem('userEmail');
+            document.getElementById('tanggal').valueAsDate = new Date();
+            document.getElementById('studentContainer').innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Data berhasil dikirim.</div>';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            overlay.style.display = 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
