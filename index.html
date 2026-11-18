@@ -378,26 +378,41 @@
     function loadSiswa() {
         const kelas = document.getElementById('kelas').value;
         const container = document.getElementById('studentContainer');
+        const btnKirim = document.getElementById('btnKirim');
         
         if (!kelas) {
             container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">Silakan pilih kelas terlebih dahulu.</div>';
+            btnKirim.style.display = 'block';
             return;
         }
 
-        container.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loader loader-dark"></span><br>Mengambil data siswa...</div>';
+        container.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loader loader-dark"></span><br>Mengecek status absen...</div>';
+        btnKirim.style.display = 'none'; // Sembunyikan tombol saat loading
 
         fetch(SCRIPT_URL + `?action=getStudents&kelas=${kelas}`)
             .then(response => response.json())
-            .then(students => {
+            .then(data => {
                 container.innerHTML = ''; 
                 
-                if (students.length === 0) {
+                // CEK APAKAH SUDAH TERISI
+                if (data.terisi) {
+                    container.innerHTML = `
+                    <div style="text-align: center; padding: 30px 20px; background: #fee2e2; border-radius: 12px; border: 1px dashed #ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 30px; color: #ef4444; margin-bottom: 10px;"></i>
+                        <h3 style="color: #991b1b; margin: 0 0 5px 0; font-size: 1.1rem;">SUDAH DIABSEN</h3>
+                        <p style="color: #b91c1c; font-size: 0.9rem; margin: 0;">Kelas <b>${kelas}</b> sudah mengisi jurnal kehadiran hari ini.</p>
+                    </div>`;
+                    return; // Berhenti di sini, tombol kirim tetap hilang
+                }
+
+                // JIKA BELUM TERISI, TAMPILKAN SISWA
+                const students = data.students;
+                if (!students || students.length === 0) {
                     container.innerHTML = '<div style="text-align: center;">Tidak ada data siswa.</div>';
                     return;
                 }
 
                 students.forEach((nama, index) => {
-                    
                     const html = `
                     <div class="student-item">
                         <div class="student-name">${index + 1}. ${nama}</div>
@@ -422,9 +437,12 @@
                     </div>`;
                     container.insertAdjacentHTML('beforeend', html);
                 });
+                
+                // Munculkan tombol kirim karena aman
+                btnKirim.style.display = 'block'; 
             })
             .catch(error => {
-                container.innerHTML = 'Gagal memuat siswa.';
+                container.innerHTML = 'Gagal mengecek data ke server. Periksa koneksi internet Anda.';
             });
     }
 
