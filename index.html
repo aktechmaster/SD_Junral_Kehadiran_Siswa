@@ -359,7 +359,8 @@
         
         loader.style.display = 'block';
         
-        fetch(SCRIPT_URL + '?action=getStudents&kelas=' + encodeURIComponent(kelas))
+        // KEMBALIKAN KE SINI: Meminta daftar kelas, bukan siswa
+        fetch(SCRIPT_URL + '?action=getClasses')
             .then(response => response.json())
             .then(data => {
                 data.forEach(kelas => {
@@ -389,10 +390,10 @@
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loader loader-dark"></span><br>Mengecek status absen...</div>';
         btnKirim.style.display = 'none'; // Sembunyikan tombol saat loading
 
-        fetch(SCRIPT_URL + `?action=getStudents&kelas=${kelas}`)
+        fetch(SCRIPT_URL + '?action=getStudents&kelas=' + encodeURIComponent(kelas))
             .then(response => response.json())
             .then(data => {
-                container.innerHTML = ''; 
+                container.innerHTML = '';
                 
                 // CEK APAKAH SUDAH TERISI
                 if (data.terisi) {
