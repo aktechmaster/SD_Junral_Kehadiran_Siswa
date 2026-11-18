@@ -359,7 +359,7 @@
         
         loader.style.display = 'block';
         
-        fetch(SCRIPT_URL + '?action=getClasses')
+        fetch(SCRIPT_URL + \?action=getStudents&kelas=${encodeURIComponent(kelas)}`)`
             .then(response => response.json())
             .then(data => {
                 data.forEach(kelas => {
