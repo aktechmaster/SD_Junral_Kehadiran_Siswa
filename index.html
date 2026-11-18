@@ -359,7 +359,7 @@
         
         loader.style.display = 'block';
         
-        fetch(SCRIPT_URL + \?action=getStudents&kelas=${encodeURIComponent(kelas)}`)`
+        fetch(SCRIPT_URL + '?action=getStudents&kelas=' + encodeURIComponent(kelas))
             .then(response => response.json())
             .then(data => {
                 data.forEach(kelas => {
@@ -389,7 +389,7 @@
         container.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loader loader-dark"></span><br>Mengecek status absen...</div>';
         btnKirim.style.display = 'none'; // Sembunyikan tombol saat loading
 
-        fetch(SCRIPT_URL + '?action=getStudents&kelas=' + encodeURIComponent(kelas))
+        fetch(SCRIPT_URL + `?action=getStudents&kelas=${kelas}`)
             .then(response => response.json())
             .then(data => {
                 container.innerHTML = ''; 
